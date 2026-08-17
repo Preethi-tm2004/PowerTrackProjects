@@ -129,6 +129,15 @@ static void set_parser_event(pstate_e s, pevent_e e)
 	escape = 0;
 }
 
+static pevent_t *return_regular_exp(FILE *fd)
+{
+	//return the regular expression if already it was there in the buffer
+	fseek(fd, -1L, SEEK_CUR);
+
+	set_parser_event(PSTATE_IDLE, PEVENT_REGULAR_EXP);
+
+	return &pevent_data;
+}
 
 /************ Event functions **********/
 
@@ -216,12 +225,7 @@ pevent_t * pstate_idle_handler(FILE *fd, int ch)
 		{
 			if(event_data_idx)
 			{
-				//return the regular expression if already it was there in the buffer
-				fseek(fd, -1L, SEEK_CUR);
-
-				set_parser_event(PSTATE_IDLE, PEVENT_REGULAR_EXP);
-
-				return &pevent_data;
+				return return_regular_exp(fd);
 			}
 			
 			pevent_data.data[event_data_idx++] = ch;
@@ -235,9 +239,7 @@ pevent_t * pstate_idle_handler(FILE *fd, int ch)
 			{
 				if(event_data_idx) // we have regular exp in buffer first process that
 				{
-					fseek(fd, -2L, SEEK_CUR); // unget chars
-					set_parser_event(PSTATE_IDLE, PEVENT_REGULAR_EXP);
-					return &pevent_data;
+					return return_regular_exp(fd);
 				}
 				else //	multi line comment begin 
 				{
@@ -248,11 +250,9 @@ pevent_t * pstate_idle_handler(FILE *fd, int ch)
 			}
 			else if(ch == '/') // single line comment
 			{
-				if(event_data_idx) // we have regular exp in buffer first process that
+				if(event_data_idx) // we have regular exp in buffer first process that should be returned
 				{
-					fseek(fd, -2L, SEEK_CUR); // unget chars
-					set_parser_event(PSTATE_IDLE, PEVENT_REGULAR_EXP);
-					return &pevent_data;
+					return return_regular_exp(fd);
 				}
 				else //	single line comment begin
 				{
@@ -272,11 +272,7 @@ pevent_t * pstate_idle_handler(FILE *fd, int ch)
 		{
 			if(event_data_idx)
 			{
-				fseek(fd, -1L, SEEK_CUR);
-
-				set_parser_event(PSTATE_IDLE, PEVENT_REGULAR_EXP);
-
-				return &pevent_data;
+				return return_regular_exp(fd);
 			}
 
 			pevent_data.data[event_data_idx++] = ch;
@@ -292,12 +288,7 @@ pevent_t * pstate_idle_handler(FILE *fd, int ch)
 		{
 			if(event_data_idx)
 			{
-				//return the regular expression if already it was there in the buffer
-				fseek(fd, -1L, SEEK_CUR);
-
-				set_parser_event(PSTATE_IDLE, PEVENT_REGULAR_EXP);
-
-				return &pevent_data;
+				return return_regular_exp(fd);
 			}
 
 			pevent_data.data[event_data_idx++] = ch;
@@ -309,11 +300,7 @@ pevent_t * pstate_idle_handler(FILE *fd, int ch)
 		{
 			if(event_data_idx)
 			{
-				fseek(fd, -1L, SEEK_CUR);
-
-				set_parser_event(PSTATE_NUMERIC_CONSTANT, PEVENT_REGULAR_EXP);
-
-				return &pevent_data;
+				return return_regular_exp(fd);
 			}
 
 			pevent_data.data[event_data_idx++] = ch;
@@ -326,9 +313,7 @@ pevent_t * pstate_idle_handler(FILE *fd, int ch)
 		{
 			if(event_data_idx)
 			{
-				fseek(fd, -1L, SEEK_CUR);
-				set_parser_event(PSTATE_RESERVE_KEYWORD, PEVENT_REGULAR_EXP);
-				return &pevent_data;
+				return return_regular_exp(fd);
 			}
 
 			word[word_idx++] = ch;
@@ -341,9 +326,7 @@ pevent_t * pstate_idle_handler(FILE *fd, int ch)
 			{
 				if(event_data_idx)
 				{
-					fseek(fd, -1L, SEEK_CUR);
-					set_parser_event(PSTATE_IDLE, PEVENT_REGULAR_EXP);
-					return &pevent_data;
+					return return_regular_exp(fd);
 				}
 
 				pevent_data.data[event_data_idx++] = ch;
@@ -355,9 +338,7 @@ pevent_t * pstate_idle_handler(FILE *fd, int ch)
 			{
 				if(event_data_idx)
 				{
-					fseek(fd, -1L, SEEK_CUR);
-					set_parser_event(PSTATE_IDLE, PEVENT_REGULAR_EXP);
-					return &pevent_data;
+					return return_regular_exp(fd);
 				}
 
 				pevent_data.data[event_data_idx++] = ch;
@@ -718,5 +699,6 @@ pevent_t * pstate_ascii_char_handler(FILE *fd, int ch)
 	/* ASCII character is not complete yet[keep collecting until the event is done] */
 	return NULL;
 }
+
 
 /**** End of file ****/
