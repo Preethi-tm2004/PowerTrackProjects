@@ -59,8 +59,8 @@ s2html/
 ├── test.c.html         # Generated HTML output
 ├── Makefile             # Project compilation
 └── screenshots/
-    ├── source-to-html-output.png
-    └── program-execution.png
+    ├── source_to_html_output.png
+    └── program_execution.png
 ```
 
 ---
@@ -154,13 +154,13 @@ Source to html conversion is done successfully
 
 The input C source code is converted into HTML with different CSS classes for syntax highlighting.
 
-![Source code and generated HTML](screenshots/source-to-html-output.png)
+![Source code and generated HTML](screenshots/source_to_html_output.png)
 
 ### Program Compilation and Execution
 
 The project is compiled using the Makefile and successfully generates the HTML output file.
 
-![Program execution](screenshots/program-execution.png)
+![Program execution](screenshots/program_execution.png)
 
 ---
 
